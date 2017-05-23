@@ -16,6 +16,9 @@ namespace ST_Fov_Editor
 
         private void MainForm_Load(object sender, EventArgs e)
         {
+            foreach (string name in VersionInfo.GetNames())
+                comboBoxVersion.Items.Add(name);
+
             Size size = new Size((int)registry.GetValue("FormWidth", 0), (int)registry.GetValue("FormHeight", 0));
             Point location = new Point((int)registry.GetValue("FormX", 0), (int)registry.GetValue("FormY", 0));
             if (!size.IsEmpty)
@@ -27,9 +30,6 @@ namespace ST_Fov_Editor
             comboBoxVersion.SelectedIndex = (int)registry.GetValue("GameVersion", 0);
             numericUpDownDesiredFov.Value = Decimal.Parse((string)registry.GetValue("DesiredFov", "83"));
             numericUpDownDesiredHudFov.Value = Decimal.Parse((string)registry.GetValue("DesiredHudFov", "0.45"));
-
-            foreach (string name in VersionInfo.GetNames())
-                comboBoxVersion.Items.Add(name);
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
