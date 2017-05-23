@@ -167,7 +167,6 @@ namespace ST_Fov_Editor
                     return;
                 }
                 textBoxCurrentHFov.Clear();
-                textBoxCurrentVFov.Clear();
                 buttonPatch.Enabled = false;
                 Log("Backup restored successfully");
             }
@@ -180,7 +179,6 @@ namespace ST_Fov_Editor
         private void textBoxBin_TextChanged(object sender, EventArgs e)
         {
             textBoxCurrentHFov.Clear();
-            textBoxCurrentVFov.Clear();
             buttonPatch.Enabled = false;
         }
 
@@ -188,7 +186,6 @@ namespace ST_Fov_Editor
         {
             buttonScan.Enabled = comboBoxVersion.SelectedIndex != 0;
             textBoxCurrentHFov.Clear();
-            textBoxCurrentVFov.Clear();
             buttonPatch.Enabled = false;
         }
     }

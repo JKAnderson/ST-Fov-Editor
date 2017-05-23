@@ -40,15 +40,10 @@
             this.textBoxCurrentHFov = new System.Windows.Forms.TextBox();
             this.numericUpDownDesiredHFov = new System.Windows.Forms.NumericUpDown();
             this.labelDesiredHFov = new System.Windows.Forms.Label();
-            this.labelCurrentVFov = new System.Windows.Forms.Label();
-            this.labelDesiredVFov = new System.Windows.Forms.Label();
-            this.numericUpDownDesiredVFov = new System.Windows.Forms.NumericUpDown();
-            this.textBoxCurrentVFov = new System.Windows.Forms.TextBox();
             this.labelLog = new System.Windows.Forms.Label();
             this.textBoxLog = new System.Windows.Forms.TextBox();
             this.folderBrowserDialogBin = new System.Windows.Forms.FolderBrowserDialog();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownDesiredHFov)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownDesiredVFov)).BeginInit();
             this.SuspendLayout();
             // 
             // labelBin
@@ -161,13 +156,23 @@
             // 
             this.numericUpDownDesiredHFov.Location = new System.Drawing.Point(174, 123);
             this.numericUpDownDesiredHFov.Maximum = new decimal(new int[] {
-            360,
+            180,
+            0,
+            0,
+            0});
+            this.numericUpDownDesiredHFov.Minimum = new decimal(new int[] {
+            5,
             0,
             0,
             0});
             this.numericUpDownDesiredHFov.Name = "numericUpDownDesiredHFov";
             this.numericUpDownDesiredHFov.Size = new System.Drawing.Size(50, 20);
             this.numericUpDownDesiredHFov.TabIndex = 10;
+            this.numericUpDownDesiredHFov.Value = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
             // 
             // labelDesiredHFov
             // 
@@ -177,48 +182,6 @@
             this.labelDesiredHFov.Size = new System.Drawing.Size(75, 13);
             this.labelDesiredHFov.TabIndex = 11;
             this.labelDesiredHFov.Text = "Desired HFov:";
-            // 
-            // labelCurrentVFov
-            // 
-            this.labelCurrentVFov.AutoSize = true;
-            this.labelCurrentVFov.Location = new System.Drawing.Point(230, 97);
-            this.labelCurrentVFov.Name = "labelCurrentVFov";
-            this.labelCurrentVFov.Size = new System.Drawing.Size(72, 13);
-            this.labelCurrentVFov.TabIndex = 12;
-            this.labelCurrentVFov.Text = "Current VFov:";
-            this.labelCurrentVFov.Visible = false;
-            // 
-            // labelDesiredVFov
-            // 
-            this.labelDesiredVFov.AutoSize = true;
-            this.labelDesiredVFov.Location = new System.Drawing.Point(230, 125);
-            this.labelDesiredVFov.Name = "labelDesiredVFov";
-            this.labelDesiredVFov.Size = new System.Drawing.Size(74, 13);
-            this.labelDesiredVFov.TabIndex = 13;
-            this.labelDesiredVFov.Text = "Desired VFov:";
-            this.labelDesiredVFov.Visible = false;
-            // 
-            // numericUpDownDesiredVFov
-            // 
-            this.numericUpDownDesiredVFov.Location = new System.Drawing.Point(310, 123);
-            this.numericUpDownDesiredVFov.Maximum = new decimal(new int[] {
-            360,
-            0,
-            0,
-            0});
-            this.numericUpDownDesiredVFov.Name = "numericUpDownDesiredVFov";
-            this.numericUpDownDesiredVFov.Size = new System.Drawing.Size(50, 20);
-            this.numericUpDownDesiredVFov.TabIndex = 15;
-            this.numericUpDownDesiredVFov.Visible = false;
-            // 
-            // textBoxCurrentVFov
-            // 
-            this.textBoxCurrentVFov.Location = new System.Drawing.Point(310, 94);
-            this.textBoxCurrentVFov.Name = "textBoxCurrentVFov";
-            this.textBoxCurrentVFov.ReadOnly = true;
-            this.textBoxCurrentVFov.Size = new System.Drawing.Size(50, 20);
-            this.textBoxCurrentVFov.TabIndex = 14;
-            this.textBoxCurrentVFov.Visible = false;
             // 
             // labelLog
             // 
@@ -253,10 +216,6 @@
             this.ClientSize = new System.Drawing.Size(373, 303);
             this.Controls.Add(this.textBoxLog);
             this.Controls.Add(this.labelLog);
-            this.Controls.Add(this.numericUpDownDesiredVFov);
-            this.Controls.Add(this.textBoxCurrentVFov);
-            this.Controls.Add(this.labelDesiredVFov);
-            this.Controls.Add(this.labelCurrentVFov);
             this.Controls.Add(this.labelDesiredHFov);
             this.Controls.Add(this.numericUpDownDesiredHFov);
             this.Controls.Add(this.textBoxCurrentHFov);
@@ -276,7 +235,6 @@
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Load += new System.EventHandler(this.MainForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownDesiredHFov)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownDesiredVFov)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -296,10 +254,6 @@
         private System.Windows.Forms.TextBox textBoxCurrentHFov;
         private System.Windows.Forms.NumericUpDown numericUpDownDesiredHFov;
         private System.Windows.Forms.Label labelDesiredHFov;
-        private System.Windows.Forms.Label labelCurrentVFov;
-        private System.Windows.Forms.Label labelDesiredVFov;
-        private System.Windows.Forms.NumericUpDown numericUpDownDesiredVFov;
-        private System.Windows.Forms.TextBox textBoxCurrentVFov;
         private System.Windows.Forms.Label labelLog;
         private System.Windows.Forms.TextBox textBoxLog;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialogBin;
