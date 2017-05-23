@@ -1,48 +1,13 @@
 ﻿using Microsoft.Win32;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace ST_Fov_Editor
 {
     public partial class MainForm : Form
     {
-        private const string DLL_NAME = @"\xrGame.dll";
-        private const string BAK_NAME = @"\xrGame.fovbak";
-
-        private readonly RegistryKey registry = Registry.CurrentUser.CreateSubKey(@"Software\ST Fov Editor");
-
-        private struct VersionInfo
-        {
-            public int Size;
-            public int Offset;
-
-            public VersionInfo(int size, int offset)
-            {
-                Size = size;
-                Offset = offset;
-            }
-        }
-        private readonly Dictionary<int, VersionInfo> versionInfo = new Dictionary<int, VersionInfo>()
-        {
-            // SoC 1.0004
-            [1] = new VersionInfo(0x005B2000, 0x004F13C4),
-            // SoC 1.0005
-            [2] = new VersionInfo(0x005B7000, 0x004F5504),
-            // SoC 1.0006
-            [3] = new VersionInfo(0x005F5000, 0x0053C598),
-            // CS 1.5.10
-            [4] = new VersionInfo(0x006B32C0, 0x005DC8F8),
-            // CoP 1.6.02
-            [5] = new VersionInfo(0x006EC2C0, 0x00635C44),
-        };
+        private static readonly RegistryKey registry = Registry.CurrentUser.CreateSubKey(@"Software\ST Fov Editor");
 
         public MainForm()
         {
@@ -52,7 +17,7 @@ namespace ST_Fov_Editor
         private void MainForm_Load(object sender, EventArgs e)
         {
             Size size = new Size((int)registry.GetValue("FormWidth", 0), (int)registry.GetValue("FormHeight", 0));
-            Point location = new Point((int)registry.GetValue("FormX", 400), (int)registry.GetValue("FormY", 400));
+            Point location = new Point((int)registry.GetValue("FormX", 0), (int)registry.GetValue("FormY", 0));
             if (!size.IsEmpty)
             {
                 this.Location = location;
@@ -60,7 +25,11 @@ namespace ST_Fov_Editor
             }
             textBoxBin.Text = (string)registry.GetValue("BinFolder", String.Empty);
             comboBoxVersion.SelectedIndex = (int)registry.GetValue("GameVersion", 0);
-            numericUpDownDesiredHFov.Value = Decimal.Parse((string)registry.GetValue("DesiredHFov", "83"));
+            numericUpDownDesiredFov.Value = Decimal.Parse((string)registry.GetValue("DesiredFov", "83"));
+            numericUpDownDesiredHudFov.Value = Decimal.Parse((string)registry.GetValue("DesiredHudFov", "0.45"));
+
+            foreach (string name in VersionInfo.GetNames())
+                comboBoxVersion.Items.Add(name);
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -71,10 +40,11 @@ namespace ST_Fov_Editor
             registry.SetValue("FormY", this.Location.Y);
             registry.SetValue("BinFolder", textBoxBin.Text);
             registry.SetValue("GameVersion", comboBoxVersion.SelectedIndex);
-            registry.SetValue("DesiredHFov", numericUpDownDesiredHFov.Value.ToString());
+            registry.SetValue("DesiredFov", numericUpDownDesiredFov.Value.ToString());
+            registry.SetValue("DesiredHudFov", numericUpDownDesiredHudFov.Value.ToString());
         }
 
-        private void Log(string format, params object[] args)
+        public void Log(string format, params object[] args)
         {
             string message = String.Format(format, args);
             if (textBoxLog.TextLength > 0)
@@ -89,104 +59,108 @@ namespace ST_Fov_Editor
             textBoxBin.Text = folderBrowserDialogBin.SelectedPath;
         }
 
-        private void buttonScan_Click(object sender, EventArgs e)
-        {
-            string dllPath = textBoxBin.Text + DLL_NAME;
-            VersionInfo version = versionInfo[comboBoxVersion.SelectedIndex];
-            if (File.Exists(dllPath))
-            {
-                byte[] xrGame = File.ReadAllBytes(dllPath);
-                if (xrGame.Length != version.Size)
-                {
-                    Log("Unexpected dll size; expected {0} bytes, got {1} bytes\r\nMake sure you have the correct version selected, and are not using modified dlls",
-                        version.Size, xrGame.Length);
-                    return;
-                }
-                float currentHFov = BitConverter.ToSingle(xrGame, version.Offset);
-                textBoxCurrentHFov.Text = currentHFov.ToString();
-                buttonPatch.Enabled = true;
-                Log("Fov scanned successfully");
-            }
-            else
-            {
-                Log("File not found: {0}", dllPath);
-            }
-        }
-
-        private void buttonPatch_Click(object sender, EventArgs e)
-        {
-            string dllPath = textBoxBin.Text + DLL_NAME;
-            string bakPath = textBoxBin.Text + BAK_NAME;
-            int offset = versionInfo[comboBoxVersion.SelectedIndex].Offset;
-            if (!File.Exists(bakPath))
-            {
-                try
-                {
-                    File.Copy(dllPath, bakPath);
-                }
-                catch (UnauthorizedAccessException)
-                {
-                    Log("Access denied; could not backup xrGame.dll");
-                    return;
-                }
-            }
-            using (BinaryWriter writer = new BinaryWriter(File.Open(dllPath, FileMode.Open)))
-            {
-                writer.Seek(offset, SeekOrigin.Begin);
-                writer.Write((float)numericUpDownDesiredHFov.Value);
-            }
-            textBoxCurrentHFov.Text = numericUpDownDesiredHFov.Value.ToString();
-            Log("Fov patched successfully");
-        }
-
-        private void buttonRestore_Click(object sender, EventArgs e)
-        {
-            string dllPath = textBoxBin.Text + DLL_NAME;
-            string bakPath = textBoxBin.Text + BAK_NAME;
-            if (File.Exists(bakPath))
-            {
-                if (File.Exists(dllPath))
-                {
-                    try
-                    {
-                        File.Delete(dllPath);
-                    }
-                    catch (UnauthorizedAccessException)
-                    {
-                        Log("Access denied; could not delete xrGame.dll");
-                        return;
-                    }
-                }
-                try
-                {
-                    File.Move(bakPath, dllPath);
-                }
-                catch (UnauthorizedAccessException)
-                {
-                    Log("Access denied; could not restore backup");
-                    return;
-                }
-                textBoxCurrentHFov.Clear();
-                buttonPatch.Enabled = false;
-                Log("Backup restored successfully");
-            }
-            else
-            {
-                Log("There is no backup to restore");
-            }
-        }
-
         private void textBoxBin_TextChanged(object sender, EventArgs e)
         {
-            textBoxCurrentHFov.Clear();
-            buttonPatch.Enabled = false;
+            textBoxCurrentFov.Clear();
+            buttonPatchFov.Enabled = false;
+            textBoxCurrentHudFov.Clear();
+            buttonPatchHudFov.Enabled = false;
         }
 
         private void comboBoxVersion_SelectedIndexChanged(object sender, EventArgs e)
         {
-            buttonScan.Enabled = comboBoxVersion.SelectedIndex != 0;
-            textBoxCurrentHFov.Clear();
-            buttonPatch.Enabled = false;
+            buttonScanFov.Enabled = comboBoxVersion.SelectedIndex > 0;
+            buttonScanHudFov.Enabled = comboBoxVersion.SelectedIndex > 0;
+            textBoxCurrentFov.Clear();
+            buttonPatchFov.Enabled = false;
+            textBoxCurrentHudFov.Clear();
+            buttonPatchHudFov.Enabled = false;
         }
+
+        #region Field of view buttons
+        private void buttonScanFov_Click(object sender, EventArgs e)
+        {
+            PatchInfo fovPatch = VersionInfo.GetVersion(comboBoxVersion.SelectedIndex).FovPatch;
+            float? result = Patcher.Scan(this, textBoxBin.Text, fovPatch);
+            if (result != null)
+            {
+                textBoxCurrentFov.Text = result.ToString();
+                buttonPatchFov.Enabled = true;
+                Log("{0} scanned successfully", fovPatch.Filename);
+            }
+        }
+
+        private void buttonPatchFov_Click(object sender, EventArgs e)
+        {
+            PatchInfo fovPatch = VersionInfo.GetVersion(comboBoxVersion.SelectedIndex).FovPatch;
+            bool success = Patcher.Patch(this, textBoxBin.Text, fovPatch, (float)numericUpDownDesiredFov.Value);
+            if (success)
+            {
+                textBoxCurrentFov.Text = numericUpDownDesiredFov.Value.ToString();
+                Log("{0} patched successfully", fovPatch.Filename);
+            }
+        }
+
+        private void buttonRestoreFov_Click(object sender, EventArgs e)
+        {
+            PatchInfo fovPatch = VersionInfo.GetVersion(comboBoxVersion.SelectedIndex).FovPatch;
+            bool success = Patcher.Restore(this, textBoxBin.Text, fovPatch);
+            if (success)
+            {
+                textBoxCurrentFov.Clear();
+                buttonPatchFov.Enabled = false;
+                Log("{0} backup restored successfully", fovPatch.Filename);
+            }
+        }
+
+        private void buttonDefaultFov_Click(object sender, EventArgs e)
+        {
+            PatchInfo fovPatch = VersionInfo.GetVersion(comboBoxVersion.SelectedIndex).FovPatch;
+            numericUpDownDesiredFov.Value = (decimal)fovPatch.Default;
+        }
+        #endregion
+
+        #region HUD Fov buttons
+        private void buttonScanHudFov_Click(object sender, EventArgs e)
+        {
+            PatchInfo hudFovPatch = VersionInfo.GetVersion(comboBoxVersion.SelectedIndex).HudFovPatch;
+            float? result = Patcher.Scan(this, textBoxBin.Text, hudFovPatch);
+            if (result != null)
+            {
+                textBoxCurrentHudFov.Text = result.ToString();
+                buttonPatchHudFov.Enabled = true;
+                Log("{0} scanned successfully", hudFovPatch.Filename);
+            }
+        }
+
+        private void buttonPatchHudFov_Click(object sender, EventArgs e)
+        {
+            PatchInfo hudFovPatch = VersionInfo.GetVersion(comboBoxVersion.SelectedIndex).HudFovPatch;
+            bool success = Patcher.Patch(this, textBoxBin.Text, hudFovPatch, (float)numericUpDownDesiredHudFov.Value);
+            if (success)
+            {
+                textBoxCurrentHudFov.Text = numericUpDownDesiredHudFov.Value.ToString();
+                Log("{0} patched successfully", hudFovPatch.Filename);
+            }
+        }
+
+        private void buttonRestoreHudFov_Click(object sender, EventArgs e)
+        {
+            PatchInfo hudFovPatch = VersionInfo.GetVersion(comboBoxVersion.SelectedIndex).HudFovPatch;
+            bool success = Patcher.Restore(this, textBoxBin.Text, hudFovPatch);
+            if (success)
+            {
+                textBoxCurrentHudFov.Clear();
+                buttonPatchHudFov.Enabled = false;
+                Log("{0} backup restored successfully", hudFovPatch.Filename);
+            }
+        }
+
+        private void buttonDefaultHudFov_Click(object sender, EventArgs e)
+        {
+            PatchInfo hudFovPatch = VersionInfo.GetVersion(comboBoxVersion.SelectedIndex).HudFovPatch;
+            numericUpDownDesiredHudFov.Value = (decimal)hudFovPatch.Default;
+        }
+        #endregion
     }
 }
