@@ -19,3 +19,8 @@ Does not support:
 3. Click Scan to check the current value
 4. Enter your desired value
 5. Click Patch to edit the value and automatically make a backup
+
+# Changelog
+### 1.10
++ Add support for changing HUD FoV
++ Window resizes properly
