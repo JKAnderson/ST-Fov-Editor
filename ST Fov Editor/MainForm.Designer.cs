@@ -62,15 +62,18 @@
             // 
             // textBoxBin
             // 
+            this.textBoxBin.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxBin.Location = new System.Drawing.Point(12, 25);
             this.textBoxBin.Name = "textBoxBin";
-            this.textBoxBin.Size = new System.Drawing.Size(267, 20);
+            this.textBoxBin.Size = new System.Drawing.Size(268, 20);
             this.textBoxBin.TabIndex = 1;
             this.textBoxBin.TextChanged += new System.EventHandler(this.textBoxBin_TextChanged);
             // 
             // buttonBrowse
             // 
-            this.buttonBrowse.Location = new System.Drawing.Point(285, 23);
+            this.buttonBrowse.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonBrowse.Location = new System.Drawing.Point(286, 23);
             this.buttonBrowse.Name = "buttonBrowse";
             this.buttonBrowse.Size = new System.Drawing.Size(75, 23);
             this.buttonBrowse.TabIndex = 2;
@@ -89,6 +92,8 @@
             // 
             // comboBoxVersion
             // 
+            this.comboBoxVersion.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.comboBoxVersion.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxVersion.FormattingEnabled = true;
             this.comboBoxVersion.Items.AddRange(new object[] {
@@ -100,7 +105,7 @@
             "Call of Pripyat (1.6.02)"});
             this.comboBoxVersion.Location = new System.Drawing.Point(12, 64);
             this.comboBoxVersion.Name = "comboBoxVersion";
-            this.comboBoxVersion.Size = new System.Drawing.Size(348, 21);
+            this.comboBoxVersion.Size = new System.Drawing.Size(349, 21);
             this.comboBoxVersion.TabIndex = 4;
             this.comboBoxVersion.SelectedIndexChanged += new System.EventHandler(this.comboBoxVersion_SelectedIndexChanged);
             // 
@@ -226,11 +231,14 @@
             // 
             // textBoxLog
             // 
+            this.textBoxLog.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxLog.Location = new System.Drawing.Point(12, 191);
             this.textBoxLog.Multiline = true;
             this.textBoxLog.Name = "textBoxLog";
             this.textBoxLog.ReadOnly = true;
-            this.textBoxLog.Size = new System.Drawing.Size(348, 100);
+            this.textBoxLog.Size = new System.Drawing.Size(349, 101);
             this.textBoxLog.TabIndex = 17;
             // 
             // folderBrowserDialogBin
@@ -242,7 +250,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(372, 302);
+            this.ClientSize = new System.Drawing.Size(373, 303);
             this.Controls.Add(this.textBoxLog);
             this.Controls.Add(this.labelLog);
             this.Controls.Add(this.numericUpDownDesiredVFov);
@@ -261,8 +269,12 @@
             this.Controls.Add(this.buttonBrowse);
             this.Controls.Add(this.textBoxBin);
             this.Controls.Add(this.labelBin);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
+            this.MinimumSize = new System.Drawing.Size(256, 256);
             this.Name = "MainForm";
             this.Text = "ST Fov Editor";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
+            this.Load += new System.EventHandler(this.MainForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownDesiredHFov)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownDesiredVFov)).EndInit();
             this.ResumeLayout(false);

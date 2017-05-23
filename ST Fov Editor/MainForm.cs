@@ -47,9 +47,31 @@ namespace ST_Fov_Editor
         public MainForm()
         {
             InitializeComponent();
+        }
+
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            Size size = new Size((int)registry.GetValue("FormWidth", 0), (int)registry.GetValue("FormHeight", 0));
+            Point location = new Point((int)registry.GetValue("FormX", 400), (int)registry.GetValue("FormY", 400));
+            if (!size.IsEmpty)
+            {
+                this.Location = location;
+                this.Size = size;
+            }
             textBoxBin.Text = (string)registry.GetValue("BinFolder", String.Empty);
             comboBoxVersion.SelectedIndex = (int)registry.GetValue("GameVersion", 0);
             numericUpDownDesiredHFov.Value = Decimal.Parse((string)registry.GetValue("DesiredHFov", "83"));
+        }
+
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            registry.SetValue("FormWidth", this.Size.Width);
+            registry.SetValue("FormHeight", this.Size.Height);
+            registry.SetValue("FormX", this.Location.X);
+            registry.SetValue("FormY", this.Location.Y);
+            registry.SetValue("BinFolder", textBoxBin.Text);
+            registry.SetValue("GameVersion", comboBoxVersion.SelectedIndex);
+            registry.SetValue("DesiredHFov", numericUpDownDesiredHFov.Value.ToString());
         }
 
         private void Log(string format, params object[] args)
@@ -69,10 +91,6 @@ namespace ST_Fov_Editor
 
         private void buttonScan_Click(object sender, EventArgs e)
         {
-            registry.SetValue("BinFolder", textBoxBin.Text);
-            registry.SetValue("GameVersion", comboBoxVersion.SelectedIndex);
-            registry.SetValue("DesiredHFov", numericUpDownDesiredHFov.Value.ToString());
-
             string dllPath = textBoxBin.Text + DLL_NAME;
             VersionInfo version = versionInfo[comboBoxVersion.SelectedIndex];
             if (File.Exists(dllPath))
